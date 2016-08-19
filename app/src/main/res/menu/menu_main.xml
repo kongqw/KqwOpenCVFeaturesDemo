@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="kong.qingwei.kqwopencvfeaturesdemo.MainActivity">
+
+    <item
+        android:id="@+id/action_open_gallery"
+        android:orderInCategory="100"
+        android:title="选择图片"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_difference_of_gaussian"
+        android:orderInCategory="100"
+        android:title="高斯差分边缘检测"
+        app:showAsAction="never" />
+</menu>
