@@ -20,4 +20,10 @@
         android:orderInCategory="100"
         android:title="Canny边缘检测器"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sobel"
+       android:orderInCategory="100"
+        android:title="Sobel滤波器"
+        app:showAsAction="never" />
 </menu>

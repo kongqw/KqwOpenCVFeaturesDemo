@@ -115,4 +115,53 @@ public class FeaturesUtil {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mSubscriber);
     }
+
+    /**
+     * Sobel滤波器
+     *
+     * @param bitmap 要检测的图片
+     */
+    public void sobel(Bitmap bitmap) {
+        if (null != mSubscriber)
+            Observable
+                    .just(bitmap)
+                    .map(new Func1<Bitmap, Bitmap>() {
+
+                        @Override
+                        public Bitmap call(Bitmap bitmap) {
+
+                            Mat grayMat = new Mat();
+                            Mat sobel = new Mat();
+                            Mat grad_x = new Mat();
+                            Mat grad_y = new Mat();
+                            Mat abs_grad_x = new Mat();
+                            Mat abs_grad_y = new Mat();
+
+                            // Bitmap转为Mat
+                            Mat src = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
+                            Utils.bitmapToMat(bitmap, src);
+                            // 原图置灰
+                            Imgproc.cvtColor(src, grayMat, Imgproc.COLOR_BGR2GRAY);
+
+                            // 计算水平方向梯度
+                            Imgproc.Sobel(grayMat, grad_x, CvType.CV_16S, 1, 0, 3, 1, 0);
+                            // 计算垂直方向梯度
+                            Imgproc.Sobel(grayMat, grad_y, CvType.CV_16S, 0, 1, 3, 1, 0);
+                            // 计算两个方向上的梯度的绝对值
+                            Core.convertScaleAbs(grad_x, abs_grad_x);
+                            Core.convertScaleAbs(grad_y, abs_grad_y);
+                            // 计算结果梯度
+                            Core.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 1, sobel);
+
+                            // Mat转Bitmap
+                            Bitmap processedImage = Bitmap.createBitmap(sobel.cols(), sobel.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(sobel, processedImage);
+
+                            return processedImage;
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mSubscriber);
+    }
 }
