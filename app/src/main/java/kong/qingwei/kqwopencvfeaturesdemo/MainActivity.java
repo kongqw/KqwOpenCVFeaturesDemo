@@ -102,6 +102,16 @@ public class MainActivity extends BaseActivity {
             // 高斯差分技术检测图像边缘
             mFeaturesUtil.differenceOfGaussian(mSelectImage);
             return true;
+        } else if (id == R.id.action_canny) {
+            // Canny边缘检测器
+            if (null == mSelectImage) {
+                Snackbar.make(mImageView, "请先选择一张图片", Snackbar.LENGTH_SHORT).show();
+                return false;
+            }
+            showProgressDialog("正在使用Canny边缘检测器检测图像边缘...");
+            // Canny边缘检测器检测图像边缘
+            mFeaturesUtil.canny(mSelectImage);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

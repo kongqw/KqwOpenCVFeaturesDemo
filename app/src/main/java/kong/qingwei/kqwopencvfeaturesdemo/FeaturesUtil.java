@@ -76,4 +76,43 @@ public class FeaturesUtil {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mSubscriber);
     }
+
+
+    /**
+     * Canny边缘检测算法
+     *
+     * @param bitmap 要检测的图片
+     */
+    public void canny(Bitmap bitmap) {
+        if (null != mSubscriber)
+            Observable
+                    .just(bitmap)
+                    .map(new Func1<Bitmap, Bitmap>() {
+
+                        @Override
+                        public Bitmap call(Bitmap bitmap) {
+
+                            Mat grayMat = new Mat();
+                            Mat cannyEdges = new Mat();
+
+                            // Bitmap转为Mat
+                            Mat src = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
+                            Utils.bitmapToMat(bitmap, src);
+
+                            // 原图置灰
+                            Imgproc.cvtColor(src, grayMat, Imgproc.COLOR_BGR2GRAY);
+                            // Canny边缘检测器检测图像边缘
+                            Imgproc.Canny(grayMat, cannyEdges, 10, 100);
+
+                            // Mat转Bitmap
+                            Bitmap processedImage = Bitmap.createBitmap(cannyEdges.cols(), cannyEdges.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(cannyEdges, processedImage);
+
+                            return processedImage;
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mSubscriber);
+    }
 }

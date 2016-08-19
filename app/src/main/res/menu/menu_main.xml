@@ -8,9 +8,16 @@
         android:orderInCategory="100"
         android:title="选择图片"
         app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_difference_of_gaussian"
         android:orderInCategory="100"
         android:title="高斯差分边缘检测"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_canny"
+        android:orderInCategory="100"
+        android:title="Canny边缘检测器"
         app:showAsAction="never" />
 </menu>
