@@ -23,7 +23,13 @@
 
     <item
         android:id="@+id/action_sobel"
-       android:orderInCategory="100"
+        android:orderInCategory="100"
         android:title="Sobel滤波器"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_harris"
+        android:orderInCategory="100"
+        android:title="Harris角点检测"
         app:showAsAction="never" />
 </menu>

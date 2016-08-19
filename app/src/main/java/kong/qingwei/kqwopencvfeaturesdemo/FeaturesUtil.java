@@ -6,9 +6,12 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.Random;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -156,6 +159,73 @@ public class FeaturesUtil {
                             // Mat转Bitmap
                             Bitmap processedImage = Bitmap.createBitmap(sobel.cols(), sobel.rows(), Bitmap.Config.ARGB_8888);
                             Utils.matToBitmap(sobel, processedImage);
+
+                            return processedImage;
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mSubscriber);
+    }
+
+    /**
+     * Harris角点检测
+     *
+     * @param bitmap 要检测的图片
+     */
+    public void harris(Bitmap bitmap) {
+        if (null != mSubscriber)
+            Observable
+                    .just(bitmap)
+                    // 检测边缘
+                    .map(new Func1<Bitmap, Mat>() {
+                        @Override
+                        public Mat call(Bitmap bitmap) {
+                            Mat grayMat = new Mat();
+                            Mat cannyEdges = new Mat();
+
+                            // Bitmap转为Mat
+                            Mat src = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
+                            Utils.bitmapToMat(bitmap, src);
+
+                            // 原图置灰
+                            Imgproc.cvtColor(src, grayMat, Imgproc.COLOR_BGR2GRAY);
+                            // Canny边缘检测器检测图像边缘
+                            Imgproc.Canny(grayMat, cannyEdges, 10, 100);
+
+                            return cannyEdges;
+                        }
+                    })
+                    // Harris对角检测
+                    .map(new Func1<Mat, Bitmap>() {
+
+                        @Override
+                        public Bitmap call(Mat cannyEdges) {
+                            Mat corners = new Mat();
+                            Mat tempDst = new Mat();
+
+                            // 找出角点
+                            Imgproc.cornerHarris(cannyEdges, tempDst, 2, 3, 0.04);
+
+                            // 归一化Harris角点的输出
+                            Mat tempDstNorm = new Mat();
+                            Core.normalize(tempDst, tempDstNorm, 0, 255, Core.NORM_MINMAX);
+                            Core.convertScaleAbs(tempDstNorm, corners);
+
+                            // 在新的图像上绘制角点
+                            Random r = new Random();
+                            for (int i = 0; i < tempDstNorm.cols(); i++) {
+                                for (int j = 0; j < tempDstNorm.rows(); j++) {
+                                    double[] value = tempDstNorm.get(j, i);
+                                    if (value[0] > 150) {
+                                        Core.circle(corners, new Point(i, j), 5, new Scalar(r.nextInt(255), 2));
+                                    }
+                                }
+                            }
+
+                            // Mat转Bitmap
+                            Bitmap processedImage = Bitmap.createBitmap(corners.cols(), corners.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(corners, processedImage);
 
                             return processedImage;
                         }

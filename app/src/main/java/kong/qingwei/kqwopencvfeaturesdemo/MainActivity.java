@@ -122,6 +122,16 @@ public class MainActivity extends BaseActivity {
             // Sobel滤波器检测图像边缘
             mFeaturesUtil.sobel(mSelectImage);
             return true;
+        } else if (id == R.id.action_harris) {
+            // Harris角点检测
+            if (null == mSelectImage) {
+                Snackbar.make(mImageView, "请先选择一张图片", Snackbar.LENGTH_SHORT).show();
+                return false;
+            }
+            showProgressDialog("正在使用Harris角点检测......");
+            // Harris角点检测
+            mFeaturesUtil.harris(mSelectImage);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
