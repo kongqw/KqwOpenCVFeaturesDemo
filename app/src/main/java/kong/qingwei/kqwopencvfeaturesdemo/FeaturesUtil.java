@@ -6,11 +6,13 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import rx.Observable;
@@ -362,6 +364,67 @@ public class FeaturesUtil {
                             // Mat转Bitmap
                             Bitmap processedImage = Bitmap.createBitmap(houghCircles.cols(), houghCircles.rows(), Bitmap.Config.ARGB_8888);
                             Utils.matToBitmap(houghCircles, processedImage);
+
+                            return processedImage;
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mSubscriber);
+    }
+
+    /**
+     * 找出轮廓
+     *
+     * @param bitmap 要检测的图片
+     */
+    public void findContours(Bitmap bitmap) {
+        if (null != mSubscriber)
+            Observable
+                    .just(bitmap)
+                    // 检测边缘
+                    .map(new Func1<Bitmap, Mat>() {
+                        @Override
+                        public Mat call(Bitmap bitmap) {
+                            Mat grayMat = new Mat();
+                            Mat cannyEdges = new Mat();
+
+                            // Bitmap转为Mat
+                            Mat src = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
+                            Utils.bitmapToMat(bitmap, src);
+
+                            // 原图置灰
+                            Imgproc.cvtColor(src, grayMat, Imgproc.COLOR_BGR2GRAY);
+                            // Canny边缘检测器检测图像边缘
+                            Imgproc.Canny(grayMat, cannyEdges, 10, 100);
+
+                            return cannyEdges;
+                        }
+                    })
+                    // 找出轮廓
+                    .map(new Func1<Mat, Bitmap>() {
+
+                        @Override
+                        public Bitmap call(Mat cannyEdges) {
+
+                            Mat hierarchy = new Mat();
+                            // 保存轮廓
+                            ArrayList<MatOfPoint> contourList = new ArrayList<>();
+
+                            // 检测轮廓
+                            Imgproc.findContours(cannyEdges, contourList, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+
+                            // 画出轮廓
+                            Mat contours = new Mat();
+                            contours.create(cannyEdges.rows(), cannyEdges.cols(), CvType.CV_8UC3);
+                            Random r = new Random();
+                            for (int i = 0; i < contourList.size(); i++) {
+                                Imgproc.drawContours(contours, contourList, i, new Scalar(r.nextInt(255), r.nextInt(255), r.nextInt(255), -1));
+                            }
+
+                            // Mat转Bitmap
+                            Bitmap processedImage = Bitmap.createBitmap(contours.cols(), contours.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(contours, processedImage);
 
                             return processedImage;
                         }

@@ -44,4 +44,10 @@
         android:orderInCategory="100"
         android:title="霍夫圆"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_find_contours"
+        android:orderInCategory="100"
+        android:title="轮廓"
+        app:showAsAction="never" />
 </menu>

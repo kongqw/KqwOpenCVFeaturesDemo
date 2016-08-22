@@ -132,25 +132,35 @@ public class MainActivity extends BaseActivity {
             // Harris角点检测
             mFeaturesUtil.harris(mSelectImage);
             return true;
-        } else if(id == R.id.action_hough_lines){
+        } else if (id == R.id.action_hough_lines) {
             // 霍夫直线
             if (null == mSelectImage) {
                 Snackbar.make(mImageView, "请先选择一张图片", Snackbar.LENGTH_SHORT).show();
                 return false;
             }
-            showProgressDialog("霍夫直线....");
+            showProgressDialog("霍夫直线...");
             // 霍夫直线
             mFeaturesUtil.houghLines(mSelectImage);
             return true;
-        } else if(id == R.id.action_hough_circles){
+        } else if (id == R.id.action_hough_circles) {
             // 霍夫圆
             if (null == mSelectImage) {
                 Snackbar.make(mImageView, "请先选择一张图片", Snackbar.LENGTH_SHORT).show();
                 return false;
             }
-            showProgressDialog("霍夫圆....");
+            showProgressDialog("霍夫圆...");
             // 霍夫圆
             mFeaturesUtil.houghCircles(mSelectImage);
+            return true;
+        } else if (id == R.id.action_find_contours) {
+            // 找出轮廓
+            if (null == mSelectImage) {
+                Snackbar.make(mImageView, "请先选择一张图片", Snackbar.LENGTH_SHORT).show();
+                return false;
+            }
+            showProgressDialog("找出轮廓...");
+            // 找出轮廓
+            mFeaturesUtil.findContours(mSelectImage);
             return true;
         }
         return super.onOptionsItemSelected(item);
