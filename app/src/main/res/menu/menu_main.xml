@@ -32,4 +32,16 @@
         android:orderInCategory="100"
         android:title="Harris角点检测"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_hough_lines"
+        android:orderInCategory="100"
+        android:title="霍夫直线"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_hough_circles"
+        android:orderInCategory="100"
+        android:title="霍夫圆"
+        app:showAsAction="never" />
 </menu>
